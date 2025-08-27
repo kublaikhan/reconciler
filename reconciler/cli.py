@@ -84,6 +84,11 @@ def main(argv: Sequence[str] | None = None):
         action="store_true",
         help="Statement lists charges as positive amounts (default assumes negatives)",
     )
+    parser.add_argument(
+        "--only-statement",
+        action="store_true",
+        help="Only show transactions that are extra on the statement",
+    )
 
     args = parser.parse_args(argv)
 
@@ -114,6 +119,13 @@ def main(argv: Sequence[str] | None = None):
 
     if not only_statement and not only_ledger:
         print("All transactions match")
+        return
+    if args.only_statement:
+        if only_statement:
+            print("Transactions only on credit card statement:")
+            print_transactions(only_statement)
+        if only_ledger:
+            print(f"{len(only_ledger)} transactions only on provided lists")
         return
     if only_statement:
         print("Transactions only on credit card statement:")
