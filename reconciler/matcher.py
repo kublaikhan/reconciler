@@ -42,7 +42,7 @@ class ExactMatcher(Matcher):
 
 
 class CombinedMatcher(ExactMatcher):
-    """Matcher that allows combining multiple ledger entries to match a statement."""
+    """Matcher that allows combining multiple statement entries to match a ledger entry."""
 
     def match(
         self, statement: Sequence[Transaction], ledger: Sequence[Transaction]
@@ -51,16 +51,16 @@ class CombinedMatcher(ExactMatcher):
         if not statement_only or not ledger_only:
             return matched, statement_only, ledger_only
 
-        remaining_statement: List[Transaction] = []
-        remaining_ledger = ledger_only[:]
-        for st in statement_only:
-            combo = _find_combination(remaining_ledger, st)
+        remaining_statement = statement_only[:]
+        remaining_ledger: List[Transaction] = []
+        for le in ledger_only:
+            combo = _find_combination(remaining_statement, le)
             if combo:
                 for item in combo:
-                    remaining_ledger.remove(item)
-                matched.append((st, combo))
+                    remaining_statement.remove(item)
+                matched.append((le, combo))
             else:
-                remaining_statement.append(st)
+                remaining_ledger.append(le)
         return matched, remaining_statement, remaining_ledger
 
 
